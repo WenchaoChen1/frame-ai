@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Conversation API 调试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-left: 4px solid #2196F3;
+            margin: 10px 0;
+        }
+        .error {
+            background: #ffebee;
+            padding: 10px;
+            border-left: 4px solid #f44336;
+            margin: 10px 0;
+        }
+        .success {
+            background: #e8f5e9;
+            padding: 10px;
+            border-left: 4px solid #4CAF50;
+            margin: 10px 0;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Conversation API 调试工具</h1>
+    
+    <div class="section">
+        <h2>1. 检查 LocalStorage</h2>
+        <button onclick="checkLocalStorage()">检查 Token</button>
+        <div id="storage-result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>2. 测试后端连接</h2>
+        <button onclick="testBackendHealth()">测试后端健康检查</button>
+        <div id="health-result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>3. 测试登录</h2>
+        <div>
+            <input type="text" id="username" placeholder="用户名" value="admin">
+            <input type="password" id="password" placeholder="密码" value="admin">
+        </div>
+        <button onclick="testLogin()">测试登录</button>
+        <div id="login-result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>4. 测试 Conversations API</h2>
+        <button onclick="testConversationsAPI()">GET /api/conversations</button>
+        <button onclick="testCreateConversation()">POST /api/conversations</button>
+        <div id="api-result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>5. 查看请求详情</h2>
+        <button onclick="testWithDetails()">详细测试（带请求头）</button>
+        <div id="detail-result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        function displayResult(elementId, content, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}">${content}</div>`;
+        }
+        
+        function checkLocalStorage() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            let html = '<h3>LocalStorage 内容：</h3>';
+            
+            if (token) {
+                html += `<div class="success">✅ Token 存在</div>`;
+                html += `<pre>Token: ${token.substring(0, 50)}...</pre>`;
+                
+                // 解析 JWT
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    html += `<pre>Token Payload:\n${JSON.stringify(payload, null, 2)}</pre>`;
+                    
+                    // 检查过期时间
+                    const exp = new Date(payload.exp * 1000);
+                    const now = new Date();
+                    if (exp < now) {
+                        html += `<div class="error">❌ Token 已过期！过期时间: ${exp.toLocaleString()}</div>`;
+                    } else {
+                        html += `<div class="success">✅ Token 有效，过期时间: ${exp.toLocaleString()}</div>`;
+                    }
+                } catch (e) {
+                    html += `<div class="error">❌ Token 格式错误: ${e.message}</div>`;
+                }
+            } else {
+                html += '<div class="error">❌ Token 不存在，请先登录</div>';
+            }
+            
+            if (user) {
+                html += `<div class="success">✅ User 信息存在</div>`;
+                html += `<pre>User: ${user}</pre>`;
+            } else {
+                html += '<div class="error">❌ User 信息不存在</div>';
+            }
+            
+            displayResult('storage-result', html, '');
+        }
+        
+        async function testBackendHealth() {
+            try {
+                displayResult('health-result', '⏳ 正在测试...', 'info');
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('health-result', 
+                        `<div class="success">✅ 后端服务正常</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>`, '');
+                } else {
+                    displayResult('health-result', `❌ 后端响应异常: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                displayResult('health-result', 
+                    `❌ 无法连接到后端服务<br>错误: ${error.message}<br>
+                    <strong>请确保后端在 http://localhost:8000 上运行！</strong>`, 'error');
+            }
+        }
+        
+        async function testLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                displayResult('login-result', '⏳ 正在登录...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // 保存 token
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    displayResult('login-result', 
+                        `<div class="success">✅ 登录成功！</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        <div class="info">Token 已保存到 LocalStorage</div>`, '');
+                } else {
+                    displayResult('login-result', 
+                        `<div class="error">❌ 登录失败: ${response.status}</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>`, '');
+                }
+            } catch (error) {
+                displayResult('login-result', `❌ 登录错误: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testConversationsAPI() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                displayResult('api-result', '❌ 请先登录获取 Token', 'error');
+                return;
+            }
+            
+            try {
+                displayResult('api-result', '⏳ 正在请求...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/conversations`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('api-result', 
+                        `<div class="success">✅ 请求成功！</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>`, '');
+                } else {
+                    displayResult('api-result', 
+                        `<div class="error">❌ 请求失败: ${response.status}</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>`, '');
+                }
+            } catch (error) {
+                displayResult('api-result', `❌ 请求错误: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testCreateConversation() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                displayResult('api-result', '❌ 请先登录获取 Token', 'error');
+                return;
+            }
+            
+            try {
+                displayResult('api-result', '⏳ 正在创建会话...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/conversations`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title: '测试会话 ' + new Date().toLocaleTimeString() })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('api-result', 
+                        `<div class="success">✅ 创建成功！</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>`, '');
+                } else {
+                    displayResult('api-result', 
+                        `<div class="error">❌ 创建失败: ${response.status}</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>`, '');
+                }
+            } catch (error) {
+                displayResult('api-result', `❌ 创建错误: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testWithDetails() {
+            const token = localStorage.getItem('token');
+            
+            let html = '<h3>请求详情：</h3>';
+            html += `<pre>URL: ${API_BASE}/api/conversations</pre>`;
+            html += `<pre>Method: GET</pre>`;
+            html += `<pre>Token: ${token ? token.substring(0, 50) + '...' : '无'}</pre>`;
+            html += `<pre>Headers:\n  Authorization: Bearer ${token ? token.substring(0, 50) + '...' : '无'}\n  Content-Type: application/json</pre>`;
+            
+            if (!token) {
+                html += '<div class="error">❌ Token 不存在，请先登录</div>';
+                displayResult('detail-result', html, '');
+                return;
+            }
+            
+            try {
+                html += '<hr><h3>响应详情：</h3>';
+                displayResult('detail-result', html + '<div class="info">⏳ 正在请求...</div>', '');
+                
+                const response = await fetch(`${API_BASE}/api/conversations`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                html += `<pre>Status: ${response.status} ${response.statusText}</pre>`;
+                html += `<pre>Headers:\n${Array.from(response.headers.entries()).map(([k, v]) => `  ${k}: ${v}`).join('\n')}</pre>`;
+                
+                const data = await response.json();
+                html += `<pre>Body:\n${JSON.stringify(data, null, 2)}</pre>`;
+                
+                if (response.ok) {
+                    html += '<div class="success">✅ 请求成功！</div>';
+                } else {
+                    html += '<div class="error">❌ 请求失败！</div>';
+                }
+                
+                displayResult('detail-result', html, '');
+            } catch (error) {
+                html += `<div class="error">❌ 请求错误: ${error.message}</div>`;
+                displayResult('detail-result', html, '');
+            }
+        }
+        
+        // 页面加载时自动检查
+        window.addEventListener('load', () => {
+            checkLocalStorage();
+            testBackendHealth();
+        });
+    </script>
+</body>
+</html>
+

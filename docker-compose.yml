@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # PostgreSQL数据库
+  db:
+    image: postgres:15-alpine
+    container_name: chatai-db
+    environment:
+      POSTGRES_DB: chatai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - chatai-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 后端服务
+  backend:
+    build: ./backend
+    container_name: chatai-backend
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/chatai
+      - SECRET_KEY=your-secret-key-change-this-in-production
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=10080
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:80
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - chatai-network
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  # 前端服务
+  frontend:
+    build: ./frontend
+    container_name: chatai-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - chatai-network
+    restart: unless-stopped
+
+networks:
+  chatai-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>认证调试工具</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #1890ff;
+      margin-bottom: 30px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #1890ff;
+      border-radius: 4px;
+    }
+    .info {
+      margin: 10px 0;
+      padding: 10px;
+      background: #e6f7ff;
+      border-radius: 4px;
+    }
+    .success {
+      color: #52c41a;
+      font-weight: bold;
+    }
+    .error {
+      color: #ff4d4f;
+      font-weight: bold;
+    }
+    .warning {
+      color: #faad14;
+      font-weight: bold;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: #1890ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #40a9ff;
+    }
+    button.danger {
+      background: #ff4d4f;
+    }
+    button.danger:hover {
+      background: #ff7875;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+    code {
+      color: #d63031;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 认证调试工具</h1>
+    
+    <div class="section">
+      <h2>📊 当前状态</h2>
+      <div id="status"></div>
+    </div>
+
+    <div class="section">
+      <h2>🔑 Token 信息</h2>
+      <div id="tokenInfo"></div>
+    </div>
+
+    <div class="section">
+      <h2>👤 用户信息</h2>
+      <div id="userInfo"></div>
+    </div>
+
+    <div class="section">
+      <h2>🛠️ 操作</h2>
+      <button onclick="refreshStatus()">🔄 刷新状态</button>
+      <button onclick="testToken()">🧪 测试 Token</button>
+      <button onclick="clearAuth()" class="danger">🗑️ 清除认证</button>
+      <button onclick="goToLogin()">👉 前往登录</button>
+      <button onclick="goToChat()">💬 前往聊天</button>
+    </div>
+
+    <div class="section">
+      <h2>📝 控制台命令</h2>
+      <p>在浏览器控制台执行以下命令进行调试：</p>
+      <pre><code>// 查看 token
+console.log('Token:', localStorage.getItem('token'));
+
+// 查看用户信息
+console.log('User:', JSON.parse(localStorage.getItem('user') || 'null'));
+
+// 清除认证
+localStorage.removeItem('token');
+localStorage.removeItem('user');
+location.reload();</code></pre>
+    </div>
+  </div>
+
+  <script>
+    // 刷新状态
+    function refreshStatus() {
+      const token = localStorage.getItem('token');
+      const userStr = localStorage.getItem('user');
+      
+      let statusHtml = '';
+      
+      if (token && userStr) {
+        statusHtml = '<div class="success">✅ 已登录</div>';
+      } else if (token && !userStr) {
+        statusHtml = '<div class="warning">⚠️ Token 存在但用户信息缺失（异常状态）</div>';
+      } else {
+        statusHtml = '<div class="error">❌ 未登录</div>';
+      }
+      
+      document.getElementById('status').innerHTML = statusHtml;
+      
+      // Token 信息
+      let tokenHtml = '';
+      if (token) {
+        try {
+          const parts = token.split('.');
+          const payload = JSON.parse(atob(parts[1]));
+          const exp = new Date(payload.exp * 1000);
+          const now = new Date();
+          const isExpired = exp < now;
+          
+          tokenHtml = `
+            <div class="info">
+              <div><strong>Token 长度:</strong> ${token.length} 字符</div>
+              <div><strong>Token 前缀:</strong> <code>${token.substring(0, 20)}...</code></div>
+              <div><strong>过期时间:</strong> ${exp.toLocaleString('zh-CN')}</div>
+              <div><strong>状态:</strong> ${isExpired ? '<span class="error">已过期</span>' : '<span class="success">有效</span>'}</div>
+              <div><strong>用户 ID:</strong> ${payload.sub}</div>
+              <div><strong>完整 Payload:</strong></div>
+              <pre>${JSON.stringify(payload, null, 2)}</pre>
+            </div>
+          `;
+        } catch (e) {
+          tokenHtml = '<div class="error">❌ Token 格式无效</div>';
+        }
+      } else {
+        tokenHtml = '<div class="error">❌ 未找到 Token</div>';
+      }
+      document.getElementById('tokenInfo').innerHTML = tokenHtml;
+      
+      // 用户信息
+      let userHtml = '';
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          userHtml = `
+            <div class="info">
+              <div><strong>用户名:</strong> ${user.username}</div>
+              <div><strong>邮箱:</strong> ${user.email}</div>
+              <div><strong>角色:</strong> ${user.role}</div>
+              <div><strong>创建时间:</strong> ${new Date(user.created_at).toLocaleString('zh-CN')}</div>
+              <div><strong>完整信息:</strong></div>
+              <pre>${JSON.stringify(user, null, 2)}</pre>
+            </div>
+          `;
+        } catch (e) {
+          userHtml = '<div class="error">❌ 用户信息格式无效</div>';
+        }
+      } else {
+        userHtml = '<div class="error">❌ 未找到用户信息</div>';
+      }
+      document.getElementById('userInfo').innerHTML = userHtml;
+    }
+
+    // 测试 Token
+    async function testToken() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('❌ 没有 Token，无法测试');
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          alert('✅ Token 有效！\n\n' + JSON.stringify(data, null, 2));
+          refreshStatus();
+        } else {
+          alert('❌ Token 无效或已过期\n\n状态码: ' + response.status);
+        }
+      } catch (error) {
+        alert('❌ 测试失败: ' + error.message);
+      }
+    }
+
+    // 清除认证
+    function clearAuth() {
+      if (confirm('确定要清除所有认证信息吗？')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        alert('✅ 已清除认证信息');
+        refreshStatus();
+      }
+    }
+
+    // 跳转到登录
+    function goToLogin() {
+      window.location.href = '/login';
+    }
+
+    // 跳转到聊天
+    function goToChat() {
+      window.location.href = '/chat';
+    }
+
+    // 页面加载时刷新状态
+    refreshStatus();
+  </script>
+</body>
+</html>
+
