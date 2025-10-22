@@ -1,7 +1,8 @@
 from typing import AsyncGenerator, List, Dict
 from openai import AsyncOpenAI
+
 from .ai_provider import AIProvider
-from ...core.config import settings
+from app.core.config import settings
 
 
 class OpenAIService(AIProvider):

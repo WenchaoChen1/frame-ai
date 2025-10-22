@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
-from ..core.database import get_db
-from ..core.security import verify_password, get_password_hash, create_access_token
-from ..models.user import User
-from ..models.login_audit import LoginAudit
-from ..schemas.user import UserCreate, UserLogin, UserResponse, Token
-from ..dependencies import get_current_user
-from ..core.logger import get_logger
 from datetime import datetime
+
+from app.core.database import get_db
+from app.core.security import verify_password, get_password_hash, create_access_token
+from app.models.user import User
+from app.models.login_audit import LoginAudit
+from app.schemas.user import UserCreate, UserLogin, UserResponse, Token
+from app.dependencies import get_current_user
+from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/api/auth", tags=["认证"])

@@ -3,17 +3,17 @@
 负责初始化和配置 FastAPI 应用
 """
 import logging
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from typing import Optional
 
-from .core.config import settings
-from .core.database import Base, engine
-from .core.logger import get_logger
-from .routers import auth, conversations, messages, providers, users, login_audit, robots, database_config, knowledge_bases
-from .swagger import swagger_config, tags_metadata
+from app.core.config import settings
+from app.core.database import Base, engine
+from app.core.logger import get_logger
+from app.routers import auth, conversations, messages, providers, users, login_audit, robots, database_config, knowledge_bases
+from app.playground.product_rag import router as product_rag_router
+from app.swagger import swagger_config, tags_metadata
 
 # 获取logger实例
 logger = get_logger(__name__)
@@ -103,6 +103,7 @@ class Application:
         self.app.include_router(robots.router)
         self.app.include_router(database_config.router)
         self.app.include_router(knowledge_bases.router)
+        self.app.include_router(product_rag_router.router)
         
         logger.info("路由注册完成")
     

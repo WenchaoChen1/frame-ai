@@ -4,8 +4,9 @@
 """
 from typing import List, Dict, Any
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from ...core.logger import get_logger
-from ...core.config import settings
+
+from app.core.logger import get_logger
+from app.core.config import settings
 
 logger = get_logger(__name__)
 

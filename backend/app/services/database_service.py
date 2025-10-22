@@ -9,10 +9,11 @@ from cryptography.fernet import Fernet
 import os
 import base64
 import sqlparse
-from ..core.logger import get_logger
-from ..core.config import settings
-from ..schemas.database_config import TableSchema, TableColumn
-from ..schemas.sql_query import QueryResult
+
+from app.core.logger import get_logger
+from app.core.config import settings
+from app.schemas.database_config import TableSchema, TableColumn
+from app.schemas.sql_query import QueryResult
 
 logger = get_logger(__name__)
 

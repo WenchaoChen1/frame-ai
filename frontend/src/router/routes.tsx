@@ -9,7 +9,8 @@ import {
   AuditOutlined,
   UserOutlined,
   RobotOutlined,
-  BookOutlined
+  BookOutlined,
+  ExperimentOutlined
 } from '@ant-design/icons';
 import { Outlet } from 'react-router-dom';
 import { RouteConfig } from '../types/route';
@@ -24,6 +25,7 @@ import LoginAudit from '../pages/LoginAudit';
 import RobotManagement from '../pages/RobotManagement';
 import KnowledgeBaseManagement from '../pages/KnowledgeBaseManagement';
 import KnowledgeBaseDetail from '../pages/KnowledgeBaseDetail';
+import ProductRAGManagement from '../playground/productRag/pages/ProductRAGManagement';
 
 /**
  * 路由配置
@@ -194,6 +196,18 @@ export const routes: RouteConfig[] = [
               title: '知识库详情',
               requireAuth: true,
               hideInMenu: true,
+              breadcrumb: true,
+            },
+          },
+          // 商品RAG测试
+          {
+            path: 'product-rag',
+            name: 'ProductRAG',
+            element: <ProductRAGManagement />,
+            meta: {
+              title: '商品RAG测试',
+              icon: <ExperimentOutlined />,
+              requireAuth: true,
               breadcrumb: true,
             },
           },

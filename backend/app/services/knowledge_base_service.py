@@ -7,17 +7,18 @@ from sqlalchemy.orm import Session
 from fastapi import UploadFile
 import os
 from datetime import datetime
-from ..models.knowledge_base import (
+
+from app.models.knowledge_base import (
     KnowledgeBase, KnowledgeBaseDocument, KnowledgeBaseChunk,
     VectorStoreType, DocumentStatus
 )
-from ..ai.models import EmbeddingModel
-from ..core.logger import get_logger
-from ..core.config import settings
-from ..ai.document_loaders import DocumentLoaderFactory
-from ..ai.text_splitters import ChunkingService
-from ..ai.embeddings import EmbeddingService
-from ..ai.vector_stores import PGVectorStore, ElasticsearchStore, Document
+from app.ai.models import EmbeddingModel
+from app.core.logger import get_logger
+from app.core.config import settings
+from app.ai.document_loaders import DocumentLoaderFactory
+from app.ai.text_splitters import ChunkingService
+from app.ai.embeddings import EmbeddingService
+from app.ai.vector_stores import PGVectorStore, ElasticsearchStore, Document
 
 logger = get_logger(__name__)
 

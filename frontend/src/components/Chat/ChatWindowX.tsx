@@ -457,7 +457,7 @@ const ChatWindowX: React.FC<ChatWindowXProps> = ({ preselectedRobotId }) => {
               <p style={{ fontSize: 14 }}>
                 {!currentConversation && selectedRobotForInput 
                   ? '在下方输入您的问题，开始与AI对话' 
-                  : '选择AI模型，输入您的问题开始对话'
+                  : '选择AI机器人，输入您的问题开始对话'
                 }
               </p>
             </div>

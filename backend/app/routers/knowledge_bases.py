@@ -4,25 +4,26 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from ..core.database import get_db
-from ..dependencies import get_current_user
-from ..models.user import User
-from ..models.knowledge_base import (
+import os
+
+from app.core.database import get_db
+from app.dependencies import get_current_user
+from app.models.user import User
+from app.models.knowledge_base import (
     KnowledgeBase, KnowledgeBaseDocument, KnowledgeBaseChunk,
     VectorStoreType, DocumentStatus
 )
-from ..ai.models import EmbeddingModel
-from ..schemas.knowledge_base import (
+from app.ai.models import EmbeddingModel
+from app.schemas.knowledge_base import (
     KnowledgeBaseCreate, KnowledgeBaseUpdate, KnowledgeBaseResponse,
     KnowledgeBaseListResponse, DocumentResponse, DocumentListResponse,
     BatchImportRequest, BatchImportResponse, SearchRequest, SearchResponse, SearchResult
 )
-from ..services.knowledge_base_service import KnowledgeBaseService
-from ..ai.retrievers import RetrievalService
-from ..ai.document_loaders import DocumentLoaderFactory
-from ..core.logger import get_logger
-from ..core.config import settings
-import os
+from app.services.knowledge_base_service import KnowledgeBaseService
+from app.ai.retrievers import RetrievalService
+from app.ai.document_loaders import DocumentLoaderFactory
+from app.core.logger import get_logger
+from app.core.config import settings
 
 logger = get_logger(__name__)
 

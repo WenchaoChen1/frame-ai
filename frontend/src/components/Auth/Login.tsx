@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { UserOutlined, LockOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService, LoginData } from '../../services/auth';
 import { useAuthStore } from '../../store/authStore';
@@ -11,10 +11,6 @@ const Login: React.FC = () => {
   const setAuth = useAuthStore((state) => state.setAuth);
   const [loading, setLoading] = React.useState(false);
   const [form] = Form.useForm();
-
-  // 默认账号信息
-  const DEFAULT_USERNAME = 'admin';
-  const DEFAULT_PASSWORD = 'admin123';
 
   const onFinish = async (values: LoginData) => {
     setLoading(true);
@@ -33,15 +29,6 @@ const Login: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // 使用默认账号填充表单
-  const useDefaultAccount = () => {
-    form.setFieldsValue({
-      username: DEFAULT_USERNAME,
-      password: DEFAULT_PASSWORD,
-    });
-    message.info('已填充默认账号');
   };
 
   return (
@@ -73,34 +60,8 @@ const Login: React.FC = () => {
               <div className="logo-inner"></div>
             </div>
           </div>
-          <h1 className="login-title">方盈AI</h1>
+          <h1 className="login-title">AI智能系统</h1>
           <p className="login-subtitle">智能对话 · 无限可能</p>
-        </div>
-
-        {/* 默认账号提示 */}
-        <div className="default-account-tip">
-          <div className="tip-header">
-            <InfoCircleOutlined style={{ marginRight: 8 }} />
-            <span>默认测试账号</span>
-          </div>
-          <div className="tip-content">
-            <div className="tip-row">
-              <span>用户名：</span>
-              <strong>{DEFAULT_USERNAME}</strong>
-            </div>
-            <div className="tip-row">
-              <span>密码：</span>
-              <strong>{DEFAULT_PASSWORD}</strong>
-            </div>
-            <Button 
-              type="link" 
-              size="small" 
-              onClick={useDefaultAccount}
-              className="quick-fill-btn"
-            >
-              快速填充
-            </Button>
-          </div>
         </div>
 
         {/* 登录表单 */}
@@ -110,10 +71,6 @@ const Login: React.FC = () => {
           onFinish={onFinish}
           autoComplete="off"
           layout="vertical"
-          initialValues={{
-            username: DEFAULT_USERNAME,
-            password: DEFAULT_PASSWORD,
-          }}
           className="login-form"
         >
           <Form.Item

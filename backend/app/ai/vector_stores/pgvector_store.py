@@ -4,11 +4,12 @@ PostgreSQL + pgvector 向量存储实现
 from typing import List, Dict, Any, Optional
 from sqlalchemy import select, delete as sql_delete, func, text
 from sqlalchemy.ext.asyncio import AsyncSession
-from ...core.database import Base, engine
-from ...models.knowledge_base import KnowledgeBaseChunk
-from ...core.logger import get_logger
-from .base import VectorStoreBase, Document
 import json
+
+from app.core.database import Base, engine
+from app.models.knowledge_base import KnowledgeBaseChunk
+from app.core.logger import get_logger
+from .base import VectorStoreBase, Document
 
 logger = get_logger(__name__)
 

@@ -26,11 +26,14 @@ class Settings(BaseSettings):
     # 生产环境应该指定具体的域名
     CORS_ORIGINS: str = "*"
     
-    # Vector Store
+    # Vector Store - Elasticsearch
     ELASTICSEARCH_URL: str = "http://localhost:9200"
-    ELASTICSEARCH_API_KEY: str = ""
+    ELASTICSEARCH_API_KEY: str = "RzlYZUFKb0JJYXVGaEJBbHl1SGc6VkJ0dWF3dUZTWXl2d3VkcXpJWU9TUQ=="  # API Key认证（优先）
+    ELASTICSEARCH_USERNAME: str = ""  # 用户名认证（次选）
+    ELASTICSEARCH_PASSWORD: str = ""  # 密码认证
     ELASTICSEARCH_INDEX_PREFIX: str = "kb_"
-    PGVECTOR_ENABLED: bool = True
+    # 默认禁用 pgvector（需要先在 PostgreSQL 上安装 pgvector 扩展）
+    PGVECTOR_ENABLED: bool = False
     
     # Embeddings
     DEFAULT_EMBEDDING_MODEL: str = "openai"  # openai, huggingface
@@ -56,6 +59,7 @@ class Settings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"
         case_sensitive = True
 
 

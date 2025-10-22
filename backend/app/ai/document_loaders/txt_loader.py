@@ -2,8 +2,9 @@
 TXT 文档加载器
 """
 from typing import BinaryIO
+
 from .base import DocumentLoader
-from ...core.logger import get_logger
+from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 

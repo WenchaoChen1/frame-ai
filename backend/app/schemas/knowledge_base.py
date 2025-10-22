@@ -1,8 +1,9 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
-from ..models.knowledge_base import VectorStoreType, DocumentStatus
-from ..ai.models import EmbeddingModel, EmbeddingProvider
+
+from app.models.knowledge_base import VectorStoreType, DocumentStatus
+from app.ai.models import EmbeddingModel, EmbeddingProvider
 
 
 # ============= 知识库 Schemas =============

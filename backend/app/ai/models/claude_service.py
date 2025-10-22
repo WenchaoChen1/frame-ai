@@ -1,7 +1,8 @@
 from typing import AsyncGenerator, List, Dict
 from anthropic import AsyncAnthropic
+
 from .ai_provider import AIProvider
-from ...core.config import settings
+from app.core.config import settings
 
 
 class ClaudeService(AIProvider):

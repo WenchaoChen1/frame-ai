@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from ..core.database import get_db
-from ..models.user import User
-from ..models.conversation import Conversation
-from ..models.robot import Robot
-from ..schemas.conversation import ConversationCreate, ConversationResponse, ConversationListResponse
-from ..dependencies import get_current_user
-from ..core.logger import get_logger
+
+from app.core.database import get_db
+from app.models.user import User
+from app.models.conversation import Conversation
+from app.models.robot import Robot
+from app.schemas.conversation import ConversationCreate, ConversationResponse, ConversationListResponse
+from app.dependencies import get_current_user
+from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/api/conversations", tags=["会话"])

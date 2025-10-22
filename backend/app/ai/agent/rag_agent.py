@@ -8,12 +8,13 @@ from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain.schema import HumanMessage, SystemMessage
 from sqlalchemy.orm import Session
-from ...core.logger import get_logger
-from ...core.config import settings
-from ...models.knowledge_base import KnowledgeBase
-from ..retrievers import RetrievalService
-from ..vector_stores import Document
 import time
+
+from app.core.logger import get_logger
+from app.core.config import settings
+from app.models.knowledge_base import KnowledgeBase
+from app.ai.retrievers import RetrievalService
+from app.ai.vector_stores import Document
 
 logger = get_logger(__name__)
 

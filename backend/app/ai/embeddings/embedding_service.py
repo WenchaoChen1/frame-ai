@@ -5,9 +5,10 @@
 from typing import List
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from ...core.config import settings
-from ...core.logger import get_logger
-from ..models import EmbeddingModel, get_embedding_model_metadata, AIProvider
+
+from app.core.config import settings
+from app.core.logger import get_logger
+from app.ai.models import EmbeddingModel, get_embedding_model_metadata, AIProvider
 
 logger = get_logger(__name__)
 

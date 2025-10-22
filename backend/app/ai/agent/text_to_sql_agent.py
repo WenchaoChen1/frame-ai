@@ -9,10 +9,11 @@ from langchain_anthropic import ChatAnthropic
 from langchain.schema import HumanMessage, SystemMessage
 import json
 import time
-from ...core.logger import get_logger
-from ...core.config import settings
-from ...services.database_service import DatabaseService
-from ...schemas.sql_query import QueryResult
+
+from app.core.logger import get_logger
+from app.core.config import settings
+from app.services.database_service import DatabaseService
+from app.schemas.sql_query import QueryResult
 
 logger = get_logger(__name__)
 

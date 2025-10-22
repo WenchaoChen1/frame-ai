@@ -1,9 +1,10 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, Table, Enum as SQLEnum
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from ..core.database import Base
-from ..ai.models import EmbeddingProvider, EmbeddingModel
 import enum
+
+from app.core.database import Base
+from app.ai.models import EmbeddingProvider, EmbeddingModel
 
 # 尝试导入 pgvector 的 Vector 类型
 try:

@@ -4,20 +4,21 @@ from sqlalchemy.orm import Session
 from typing import List, Dict
 from datetime import datetime
 import time
-from ..core.database import get_db
-from ..models.user import User
-from ..models.conversation import Conversation
-from ..models.message import Message
-from ..models.database_config import DatabaseConfig, DatabaseMetadata
-from ..models.sql_query_log import SQLQueryLog
-from ..schemas.message import MessageCreate, MessageResponse
-from ..dependencies import get_current_user
-from ..ai.models.ai_manager import ai_manager
-from ..ai.agent.text_to_sql_agent import text_to_sql_agent
-from ..ai.agent.rag_agent import create_rag_agent
-from ..services.database_service import DatabaseService
-from ..core.logger import get_logger
 import json
+
+from app.core.database import get_db
+from app.models.user import User
+from app.models.conversation import Conversation
+from app.models.message import Message
+from app.models.database_config import DatabaseConfig, DatabaseMetadata
+from app.models.sql_query_log import SQLQueryLog
+from app.schemas.message import MessageCreate, MessageResponse
+from app.dependencies import get_current_user
+from app.ai.models.ai_manager import ai_manager
+from app.ai.agent.text_to_sql_agent import text_to_sql_agent
+from app.ai.agent.rag_agent import create_rag_agent
+from app.services.database_service import DatabaseService
+from app.core.logger import get_logger
 import asyncio
 
 logger = get_logger(__name__)

@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from ..core.database import Base
+
+from app.core.database import Base
 
 
 class Robot(Base):

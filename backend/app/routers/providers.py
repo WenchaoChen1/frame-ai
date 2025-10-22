@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Query
 from typing import Optional
-from ..ai.models.ai_manager import ai_manager
-from ..ai.models import (
+
+from app.ai.models.ai_manager import ai_manager
+from app.ai.models import (
     AIProvider,
     EmbeddingModel,
     ChatModel,

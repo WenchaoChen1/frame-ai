@@ -6,11 +6,12 @@ from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 from rank_bm25 import BM25Okapi
 import jieba
-from ...models.knowledge_base import KnowledgeBase, KnowledgeBaseChunk, VectorStoreType
-from ...core.logger import get_logger
-from ...core.config import settings
-from ..vector_stores import PGVectorStore, ElasticsearchStore, Document
-from ..embeddings import EmbeddingService
+
+from app.models.knowledge_base import KnowledgeBase, KnowledgeBaseChunk, VectorStoreType
+from app.core.logger import get_logger
+from app.core.config import settings
+from app.ai.vector_stores import PGVectorStore, ElasticsearchStore, Document
+from app.ai.embeddings import EmbeddingService
 
 logger = get_logger(__name__)
 

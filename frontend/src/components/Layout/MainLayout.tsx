@@ -12,7 +12,8 @@ import {
   AuditOutlined,
   ProfileOutlined,
   RobotOutlined,
-  BookOutlined
+  BookOutlined,
+  ExperimentOutlined
 } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
@@ -71,6 +72,12 @@ const MainLayout: React.FC = () => {
       onClick: () => navigate('/system/knowledge-bases'),
     },
     {
+      key: '/system/product-rag',
+      icon: <ExperimentOutlined />,
+      label: '商品测试',
+      onClick: () => navigate('/system/product-rag'),
+    },
+    {
       key: '/system',
       icon: <SettingOutlined />,
       label: '系统管理',
@@ -107,6 +114,7 @@ const MainLayout: React.FC = () => {
     if (path.startsWith('/system/tools')) return '/system/tools';
     if (path.startsWith('/system/login-audit')) return '/system/login-audit';
     if (path.startsWith('/system/knowledge-bases')) return '/system/knowledge-bases'; // 包括详情页
+    if (path.startsWith('/system/product-rag')) return '/system/product-rag';
     if (path.startsWith('/profile')) return '/profile';
     return '/chat';
   };
@@ -164,7 +172,7 @@ const MainLayout: React.FC = () => {
               whiteSpace: 'nowrap',
               transition: 'all 0.2s ease'
             }}>
-              {collapsed ? '方盈' : '方盈AI'}
+              AI
             </div>
             <Button
               type="text"

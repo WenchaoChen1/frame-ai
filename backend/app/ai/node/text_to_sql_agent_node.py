@@ -3,7 +3,8 @@ Text-to-SQL Agent 节点定义
 包含 Text-to-SQL Agent 工作流中的所有节点
 """
 from typing import Callable
-from ..agent.text_to_sql_agent import TextToSQLState, TextToSQLAgent
+
+from app.ai.agent.text_to_sql_agent import TextToSQLState, TextToSQLAgent
 
 
 class TextToSQLAgentNode:

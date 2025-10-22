@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Optional
-from ..core.database import get_db
-from ..models.user import User
-from ..models.robot import Robot
-from ..models.database_config import DatabaseConfig, DatabaseMetadata
-from ..schemas.database_config import (
+
+from app.core.database import get_db
+from app.models.user import User
+from app.models.robot import Robot
+from app.models.database_config import DatabaseConfig, DatabaseMetadata
+from app.schemas.database_config import (
     DatabaseConfigCreate,
     DatabaseConfigUpdate,
     DatabaseConfigResponse,
@@ -15,9 +16,9 @@ from ..schemas.database_config import (
     DatabaseMetadataCreate,
     DatabaseMetadataResponse
 )
-from ..dependencies import get_current_user
-from ..services.database_service import DatabaseService
-from ..core.logger import get_logger
+from app.dependencies import get_current_user
+from app.services.database_service import DatabaseService
+from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/api/robots", tags=["数据库配置"])

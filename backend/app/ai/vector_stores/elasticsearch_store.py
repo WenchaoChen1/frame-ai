@@ -3,10 +3,11 @@ Elasticsearch 向量存储实现
 """
 from typing import List, Dict, Any, Optional
 from elasticsearch import AsyncElasticsearch
-from ...core.config import settings
-from ...core.logger import get_logger
-from .base import VectorStoreBase, Document
 import json
+
+from app.core.config import settings
+from app.core.logger import get_logger
+from .base import VectorStoreBase, Document
 
 logger = get_logger(__name__)
 
@@ -29,25 +30,39 @@ class ElasticsearchStore(VectorStoreBase):
     async def _get_client(self) -> AsyncElasticsearch:
         """获取 ES 客户端"""
         if self._client is None:
+            # 优先使用 API Key
             if settings.ELASTICSEARCH_API_KEY:
                 self._client = AsyncElasticsearch(
                     settings.ELASTICSEARCH_URL,
                     api_key=settings.ELASTICSEARCH_API_KEY
                 )
+            # 检查是否有用户名密码认证
+            elif hasattr(settings, 'ELASTICSEARCH_USERNAME') and settings.ELASTICSEARCH_USERNAME:
+                self._client = AsyncElasticsearch(
+                    settings.ELASTICSEARCH_URL,
+                    basic_auth=(settings.ELASTICSEARCH_USERNAME, settings.ELASTICSEARCH_PASSWORD)
+                )
             else:
-                self._client = AsyncElasticsearch(settings.ELASTICSEARCH_URL)
+                # 尝试无认证连接
+                self._client = AsyncElasticsearch(
+                    settings.ELASTICSEARCH_URL,
+                    verify_certs=False  # 开发环境可以禁用证书验证
+                )
         return self._client
     
     async def _ensure_index(self):
         """确保索引存在，如果不存在则创建"""
         client = await self._get_client()
         
-        if not await client.indices.exists(index=self.index_name):
-            logger.info(f"创建 Elasticsearch 索引: {self.index_name}")
+        try:
+            # 检查索引是否存在
+            exists = await client.indices.exists(index=self.index_name)
             
-            # 定义索引 mapping
-            mapping = {
-                "mappings": {
+            if not exists:
+                logger.info(f"创建 Elasticsearch 索引: {self.index_name}")
+                
+                # 定义索引 mapping
+                mappings = {
                     "properties": {
                         "content": {
                             "type": "text",
@@ -73,15 +88,23 @@ class ElasticsearchStore(VectorStoreBase):
                             "type": "date"
                         }
                     }
-                },
-                "settings": {
+                }
+                
+                settings = {
                     "number_of_shards": 1,
                     "number_of_replicas": 0
                 }
-            }
-            
-            await client.indices.create(index=self.index_name, body=mapping)
-            logger.info(f"索引 {self.index_name} 创建成功")
+                
+                # Elasticsearch 8.x 使用新的API方式（不使用body参数）
+                await client.indices.create(
+                    index=self.index_name,
+                    mappings=mappings,
+                    settings=settings
+                )
+                logger.info(f"索引 {self.index_name} 创建成功")
+        except Exception as e:
+            logger.error(f"确保索引存在失败: {e}")
+            raise
     
     async def add_documents(
         self,
@@ -160,14 +183,12 @@ class ElasticsearchStore(VectorStoreBase):
             await self._ensure_index()
             client = await self._get_client()
             
-            # 构建查询
-            query = {
-                "knn": {
-                    "field": "embedding",
-                    "query_vector": query_embedding,
-                    "k": top_k,
-                    "num_candidates": top_k * 2
-                }
+            # 构建KNN查询
+            knn = {
+                "field": "embedding",
+                "query_vector": query_embedding,
+                "k": top_k,
+                "num_candidates": top_k * 2
             }
             
             # 添加过滤条件
@@ -177,15 +198,13 @@ class ElasticsearchStore(VectorStoreBase):
                     filters.append({"term": {key: value}})
                 
                 if filters:
-                    query["knn"]["filter"] = filters if len(filters) > 1 else filters[0]
+                    knn["filter"] = filters if len(filters) > 1 else filters[0]
             
-            # 执行搜索
+            # 执行搜索 - Elasticsearch 8.x API方式
             response = await client.search(
                 index=self.index_name,
-                body={
-                    "query": query,
-                    "size": top_k
-                }
+                knn=knn,
+                size=top_k
             )
             
             # 解析结果
