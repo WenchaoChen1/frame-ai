@@ -4,6 +4,7 @@
 
 ## 功能特性
 
+### 核心功能
 - 🤖 **多AI提供商支持**：OpenAI GPT、Anthropic Claude、Ollama本地模型
 - 💬 **多会话管理**：创建、切换、删除多个对话会话
 - 💾 **历史记录持久化**：所有对话历史保存在PostgreSQL数据库
@@ -14,6 +15,13 @@
 - 🗺️ **完善的路由管理**：支持URL导航和浏览器历史
 - 📚 **Swagger文档**：完整的API交互式文档
 - 🐳 **Docker部署**：一键部署，支持独立运行
+
+### 高级功能
+- 🤖 **智能机器人管理** - [功能文档](docs/features/robot/ROBOT_FEATURE.md)
+- 📚 **RAG 知识库系统** - [功能文档](docs/features/rag/)
+- 💬 **Text-to-SQL 自然语言查询** - [功能文档](docs/features/text-to-sql/TEXT_TO_SQL_IMPLEMENTATION.md)
+- 🗄️ **多数据库连接支持** - [功能文档](docs/features/DATABASE_FEATURE.md)
+- 🧠 **知识库高级配置** - [功能文档](docs/features/knowledge-base/KNOWLEDGE_BASE_ADVANCED_CONFIG.md)
 
 ## 技术栈
 
@@ -147,8 +155,9 @@ npm run dev
 
 - **后端启动指南**: [backend/README.md](backend/README.md)
 - **前端启动指南**: [frontend/README.md](frontend/README.md)
-- **完整开发配置**: [DEV_SETUP.md](DEV_SETUP.md)
-- **快速启动指南**: [START_DEV_GUIDE.md](START_DEV_GUIDE.md)
+- **完整开发配置**: [docs/development/setup/DEV_SETUP.md](docs/development/setup/DEV_SETUP.md)
+- **快速启动指南**: [docs/guides/quickstart/](docs/guides/quickstart/)
+- **完整文档目录**: [docs/README.md](docs/README.md) ⭐
 
 ### 访问地址
 
@@ -211,23 +220,43 @@ fangying-ai/
 │   │   ├── models/         # 数据模型
 │   │   ├── schemas/        # Pydantic模式
 │   │   ├── routers/        # API路由
-│   │   ├── services/       # AI服务
+│   │   ├── services/       # 业务服务
+│   │   ├── ai/             # AI 模块
+│   │   │   ├── agent/      # 智能体 (RAG, Text-to-SQL)
+│   │   │   ├── models/     # AI 模型服务
+│   │   │   ├── embeddings/ # 嵌入模型
+│   │   │   ├── vector_stores/ # 向量存储
+│   │   │   └── document_loaders/ # 文档加载器
+│   │   ├── playground/     # 实验功能
 │   │   └── main.py         # 应用入口
+│   ├── migrations/         # 数据库迁移
 │   ├── requirements.txt    # Python依赖
 │   └── Dockerfile
 ├── frontend/               # 前端应用
 │   ├── src/
 │   │   ├── components/    # React组件
 │   │   ├── services/      # API服务
+│   │   ├── pages/         # 页面组件
 │   │   ├── store/         # 状态管理
+│   │   ├── playground/    # 实验功能
 │   │   ├── App.tsx        # 应用入口
 │   │   └── main.tsx
 │   ├── package.json       # Node依赖
 │   ├── Dockerfile
 │   └── nginx.conf         # Nginx配置
+├── docs/                   # 📚 项目文档
+│   ├── features/          # 功能文档
+│   ├── guides/            # 使用指南
+│   ├── development/       # 开发文档
+│   └── archived/          # 历史文档
 ├── docker-compose.yml     # Docker编排
+├── LICENSE
 └── README.md
 ```
+
+**详细目录结构**：
+- [后端目录结构](backend/DIRECTORY_STRUCTURE.md)
+- [前端目录结构](frontend/DIRECTORY_STRUCTURE.md)
 
 ## API文档
 
@@ -237,6 +266,7 @@ fangying-ai/
 
 - **Swagger UI**: http://localhost:8000/docs - 在线测试API
 - **ReDoc**: http://localhost:8000/redoc - 美观的文档展示
+- **详细 API 文档**: [docs/development/api/API.md](docs/development/api/API.md)
 
 主要API端点：
 
@@ -248,8 +278,10 @@ fangying-ai/
 - `GET /api/conversations/{id}` - 获取会话详情
 - `DELETE /api/conversations/{id}` - 删除会话
 - `POST /api/conversations/{id}/messages/stream` - 发送消息（流式）
-- `POST /api/conversations/{id}/messages/stop/{message_id}` - 停止生成 ⭐新增
+- `POST /api/conversations/{id}/messages/stop/{message_id}` - 停止生成
 - `GET /api/providers` - 获取可用的AI提供商
+- `GET /api/robots` - 获取机器人列表
+- `GET /api/knowledge-bases` - 获取知识库列表
 
 ## 常见问题
 
@@ -297,9 +329,38 @@ docker-compose down -v
 
 MIT License
 
+## 📖 文档导航
+
+### 快速入门
+- [项目概览](PROJECT_OVERVIEW.md)
+- [使用指南](USAGE_GUIDE.md)
+- [快速开始](docs/guides/quickstart/)
+
+### 功能文档
+- [RAG 知识库系统](docs/features/rag/)
+- [Text-to-SQL 查询](docs/features/text-to-sql/)
+- [机器人管理](docs/features/robot/)
+- [知识库高级配置](docs/features/knowledge-base/)
+- [商品 RAG 示例](docs/features/product-rag/)
+
+### 开发指南
+- [开发环境搭建](docs/development/setup/)
+- [API 文档](docs/development/api/)
+- [贡献指南](docs/development/contributing/)
+
+### 部署和配置
+- [部署指南](docs/guides/deployment/)
+- [配置说明](docs/guides/configuration/)
+
+**完整文档目录**: [docs/README.md](docs/README.md)
+
 ## 贡献
 
-欢迎提交Issue和Pull Request！
+欢迎提交Issue和Pull Request！请查看 [贡献指南](docs/development/contributing/CONTRIBUTING.md)。
+
+## 变更日志
+
+查看 [CHANGELOG](docs/development/contributing/CHANGELOG.md) 了解版本更新信息。
 
 ## 联系方式
 
