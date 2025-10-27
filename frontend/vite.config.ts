@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0', // 允许通过IP访问
-    port: 3000,
+    port: 9101,
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
