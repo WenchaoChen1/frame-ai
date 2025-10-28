@@ -1,0 +1,60 @@
+# 根目录 .dockerignore
+# 用于排除不需要包含在 Docker 构建上下文中的文件
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# 文档
+*.md
+docs/
+
+# IDE 和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 环境变量
+.env
+.env.*
+!.env.example
+
+# Docker 相关
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# 脚本
+scripts/
+*.sh
+*.bat
+Makefile
+
+# 日志
+*.log
+
+# 临时文件
+*.tmp
+*.bak
+*.cache
+
+# 前端
+frontend/node_modules/
+frontend/dist/
+frontend/.next/
+
+# 后端
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+

@@ -1,13 +1,20 @@
-__pycache__
+# Python 缓存和编译文件
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.so
 .Python
+
+# 虚拟环境
 env/
 venv/
-.venv
-pip-log.txt
-pip-delete-this-directory.txt
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 测试和覆盖率
 .tox/
 .coverage
 .coverage.*
@@ -15,13 +22,60 @@ pip-delete-this-directory.txt
 nosetests.xml
 coverage.xml
 *.cover
+.pytest_cache/
+.hypothesis/
+
+# 日志文件
 *.log
-.git
-.mypy_cache
-.pytest_cache
-.hypothesis
+pip-log.txt
+pip-delete-this-directory.txt
+
+# 数据库文件
 *.db
 *.sqlite
+*.sqlite3
+
+# 环境变量文件
 .env
+.env.*
+!.env.example
+
+# IDE 和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# 文档和说明
+# README.md
+# DIRECTORY_STRUCTURE.md
+# docs/
+
+# 测试文件
+# tests/
+# test_*.py
+# *_test.py
+
+# 脚本和工具
+scripts/
+*.sh
+*.bat
+
+# Docker 相关
+
+# Alembic 迁移（如果不需要在容器内运行）
+# alembic/
+# alembic.ini
+
+# 其他
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
 
