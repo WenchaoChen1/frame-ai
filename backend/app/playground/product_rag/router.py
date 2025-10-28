@@ -31,8 +31,15 @@ router = APIRouter(
     tags=["商品RAG测试"]
 )
 
-# 创建默认服务实例
-rag_service = ProductRAGService()
+# 延迟创建服务实例（避免启动时加载大型库）
+_rag_service = None
+
+def get_rag_service() -> ProductRAGService:
+    """获取 ProductRAG 服务实例（懒加载）"""
+    global _rag_service
+    if _rag_service is None:
+        _rag_service = ProductRAGService()
+    return _rag_service
 
 
 @router.post("/upload")
@@ -79,7 +86,7 @@ async def upload_products(
         logger.info(f"开始处理 {len(products_data)} 个商品")
         
         # 使用指定的索引或默认索引
-        service = ProductRAGService(index_name=index_name) if index_name else rag_service
+        service = ProductRAGService(index_name=index_name) if index_name else get_rag_service()
         
         # 处理并存储
         result = await service.process_and_store_products(
@@ -112,7 +119,7 @@ async def get_products(
     """
     try:
         # 使用指定的索引或默认索引
-        service = ProductRAGService(index_name=index_name) if index_name else rag_service
+        service = ProductRAGService(index_name=index_name) if index_name else get_rag_service()
         
         # 从ES查询商品
         result = await service.get_products_from_es(
@@ -146,7 +153,7 @@ async def search_products(
     """
     try:
         # 使用指定的索引或默认索引
-        service = ProductRAGService(index_name=index_name) if index_name else rag_service
+        service = ProductRAGService(index_name=index_name) if index_name else get_rag_service()
         
         response = await service.search_products(
             query=request.query,
@@ -176,7 +183,7 @@ async def batch_search_products(
         start_time = time.time()
         
         # 使用指定的索引或默认索引
-        service = ProductRAGService(index_name=index_name) if index_name else rag_service
+        service = ProductRAGService(index_name=index_name) if index_name else get_rag_service()
         
         # 批量搜索
         results = await service.batch_search_products(
@@ -212,7 +219,7 @@ async def get_stats(
     """
     try:
         # 使用指定的索引或默认索引
-        service = ProductRAGService(index_name=index_name) if index_name else rag_service
+        service = ProductRAGService(index_name=index_name) if index_name else get_rag_service()
         
         stats = await service.get_stats(db=db)
         return stats
@@ -236,7 +243,7 @@ async def clear_all_data(
     """
     try:
         # 使用指定的索引或默认索引
-        service = ProductRAGService(index_name=index_name) if index_name else rag_service
+        service = ProductRAGService(index_name=index_name) if index_name else get_rag_service()
         
         result = await service.clear_all_data(db=db)
         
@@ -260,7 +267,7 @@ async def get_all_indices(
     - 返回所有索引信息，包含文档数、存储大小、健康状态等
     """
     try:
-        result = await rag_service.get_all_indices()
+        result = await get_rag_service().get_all_indices()
         return result
         
     except Exception as e:
@@ -279,7 +286,7 @@ async def delete_index(
     - 删除指定名称的Elasticsearch索引及其所有数据
     """
     try:
-        result = await rag_service.delete_index(index_name=index_name)
+        result = await get_rag_service().delete_index(index_name=index_name)
         
         return {
             "message": f"索引 {index_name} 已删除",

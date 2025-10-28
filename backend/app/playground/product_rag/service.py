@@ -4,11 +4,14 @@
 """
 import json
 import time
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from sqlalchemy.orm import Session
-from langchain_elasticsearch import ElasticsearchStore
-from langchain_core.documents import Document
-from elasticsearch import AsyncElasticsearch
+
+# 延迟导入：只在使用时加载大型 AI 库
+if TYPE_CHECKING:
+    from langchain_elasticsearch import ElasticsearchStore
+    from langchain_core.documents import Document
+    from elasticsearch import AsyncElasticsearch
 
 from app.core.logger import get_logger
 from app.core.config import settings
@@ -56,9 +59,12 @@ class ProductRAGService:
         return self._embeddings
     
     @property
-    def vector_store(self) -> ElasticsearchStore:
+    def vector_store(self):
         """延迟初始化 ElasticsearchStore"""
         if self._vector_store is None:
+            # 延迟导入：只在实际使用时加载
+            from langchain_elasticsearch import ElasticsearchStore
+            
             logger.info(f"初始化 LangChain ElasticsearchStore (索引: {self.index_name})")
             
             # 构建 ES 连接参数
@@ -138,6 +144,9 @@ class ProductRAGService:
         Returns:
             处理结果统计
         """
+        # 延迟导入：只在使用时加载
+        from langchain_core.documents import Document
+        
         start_time = time.time()
         
         try:
@@ -206,6 +215,9 @@ class ProductRAGService:
         Returns:
             搜索响应
         """
+        # 延迟导入：只在使用时加载
+        from langchain_core.documents import Document
+        
         start_time = time.time()
         
         try:
@@ -317,8 +329,11 @@ class ProductRAGService:
         
         return results
     
-    async def _get_es_client(self) -> AsyncElasticsearch:
+    async def _get_es_client(self):
         """获取 Elasticsearch 异步客户端"""
+        # 延迟导入：只在使用时加载
+        from elasticsearch import AsyncElasticsearch
+        
         if self._es_client is None:
             # 构建连接参数
             if settings.ELASTICSEARCH_API_KEY:

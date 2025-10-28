@@ -51,6 +51,11 @@ class Settings(BaseSettings):
     ENABLE_QUERY_REWRITE: bool = True
     ENABLE_RERANKING: bool = True
     
+    # 性能优化：延迟导入 AI 模块
+    # True: 应用快速启动（8秒），后台预热 AI 模块（推荐）
+    # False: 启动时加载所有模块（70秒），但首次使用无延迟
+    LAZY_LOAD_AI_MODULES: bool = True
+    
     @property
     def cors_origins_list(self) -> List[str]:
         if self.CORS_ORIGINS == "*":

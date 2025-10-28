@@ -15,8 +15,9 @@ from app.models.sql_query_log import SQLQueryLog
 from app.schemas.message import MessageCreate, MessageResponse
 from app.dependencies import get_current_user
 from app.ai.models.ai_manager import ai_manager
-from app.ai.agent.text_to_sql_agent import text_to_sql_agent
-from app.ai.agent.rag_agent import create_rag_agent
+# 延迟导入：只在使用时加载（避免启动时加载大型 AI 库）
+# from app.ai.agent.text_to_sql_agent import text_to_sql_agent
+# from app.ai.agent.rag_agent import create_rag_agent
 from app.services.database_service import DatabaseService
 from app.core.logger import get_logger
 import asyncio
@@ -162,6 +163,9 @@ async def send_message_stream(
             # 如果配置了数据库，先尝试 Text-to-SQL
             if has_database and db_config and db_metadata:
                 try:
+                    # 延迟导入：只在需要时加载 Text-to-SQL Agent
+                    from app.ai.agent.text_to_sql_agent import text_to_sql_agent
+                    
                     start_time = time.time()
                     
                     # 格式化数据库 schema
@@ -290,6 +294,9 @@ async def send_message_stream(
             # 如果有知识库，使用 RAG Agent
             if has_knowledge_bases and knowledge_base_ids:
                 try:
+                    # 延迟导入：只在需要时加载 RAG Agent
+                    from app.ai.agent.rag_agent import create_rag_agent
+                    
                     start_time = time.time()
                     
                     # 创建 RAG Agent

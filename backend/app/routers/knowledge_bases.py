@@ -20,7 +20,8 @@ from app.schemas.knowledge_base import (
     BatchImportRequest, BatchImportResponse, SearchRequest, SearchResponse, SearchResult
 )
 from app.services.knowledge_base_service import KnowledgeBaseService
-from app.ai.retrievers import RetrievalService
+# 未使用，已移除以加快启动速度
+# from app.ai.retrievers import RetrievalService
 from app.ai.document_loaders import DocumentLoaderFactory
 from app.core.logger import get_logger
 from app.core.config import settings
@@ -376,6 +377,9 @@ async def search_knowledge_bases(
 ):
     """在知识库中搜索"""
     try:
+        # 延迟导入：只在搜索时加载 RetrievalService
+        from app.ai.retrievers import RetrievalService
+        
         # 如果未指定知识库，搜索用户所有知识库
         if not request.knowledge_base_ids:
             user_kbs = db.query(KnowledgeBase).filter(
