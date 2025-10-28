@@ -27,8 +27,8 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "*"
     
     # Vector Store - Elasticsearch
-    ELASTICSEARCH_URL: str = "http://localhost:9200"
-    ELASTICSEARCH_API_KEY: str = "RzlYZUFKb0JJYXVGaEJBbHl1SGc6VkJ0dWF3dUZTWXl2d3VkcXpJWU9TUQ=="  # API Key认证（优先）
+    ELASTICSEARCH_URL: str = ""
+    ELASTICSEARCH_API_KEY: str = ""  # API Key认证（优先）
     ELASTICSEARCH_USERNAME: str = ""  # 用户名认证（次选）
     ELASTICSEARCH_PASSWORD: str = ""  # 密码认证
     ELASTICSEARCH_INDEX_PREFIX: str = "kb_"

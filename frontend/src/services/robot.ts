@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// 在开发模式下使用代理，生产模式下使用相对路径
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export interface Robot {
   id: number;

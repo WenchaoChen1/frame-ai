@@ -21,12 +21,15 @@ services:
       dockerfile: Dockerfile.dev
     container_name: chatai-frontend-dev
     ports:
-      - "3000:3000"
+      - "${VITE_DEV_PORT:-3000}:${VITE_PORT:-9101}"
     volumes:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://localhost:8000
+      - VITE_API_URL=${VITE_API_URL:-}
+      - VITE_API_PROXY_TARGET=${VITE_API_PROXY_TARGET:-http://backend:8000}
+      - VITE_PORT=${VITE_PORT:-9101}
+      - VITE_HOST=${VITE_HOST:-0.0.0.0}
     networks:
       - chatai-network
     command: npm run dev -- --host 0.0.0.0

@@ -99,6 +99,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-}
+        - VITE_PORT=${VITE_PORT:-9101}
+        - VITE_HOST=${VITE_HOST:-0.0.0.0}
     container_name: chatai-frontend
     ports:
       - "${FRONTEND_PORT:-80}:80"

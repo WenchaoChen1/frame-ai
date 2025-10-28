@@ -12,6 +12,16 @@ RUN npm ci
 # 复制源代码
 COPY . .
 
+# 构建时环境变量（可以在构建时通过 --build-arg 传递）
+ARG VITE_API_URL=""
+ARG VITE_PORT=9101
+ARG VITE_HOST=0.0.0.0
+
+# 设置环境变量供 Vite 使用
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_PORT=$VITE_PORT
+ENV VITE_HOST=$VITE_HOST
+
 # 构建应用
 RUN npm run build
 
