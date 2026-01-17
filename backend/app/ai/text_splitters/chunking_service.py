@@ -3,7 +3,7 @@
 使用 LangChain 的 TextSplitter 进行文本分块
 """
 from typing import List, Dict, Any
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app.core.logger import get_logger
 from app.core.config import settings

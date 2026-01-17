@@ -3,6 +3,13 @@
 使用启动类初始化应用
 """
 import time
+import sys
+import io
+
+# 设置 stdout 编码为 utf-8，避免 Windows 上的编码问题
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 # 记录模块导入开始时间
 _import_start = time.time()
